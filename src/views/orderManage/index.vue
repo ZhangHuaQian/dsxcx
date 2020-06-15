@@ -1,45 +1,54 @@
 <template>
   <div class="app-container">
-
-
     <div style="margin-top: 15px;margin-bottom: 50px;width:20vw">
-      <el-input placeholder="请输入内容" v-model="input3" class="input-with-select" clearable >
+      <el-input placeholder="请输入内容" v-model="input3" class="input-with-select" clearable>
         <el-button slot="append" icon="el-icon-search"></el-button>
       </el-input>
     </div>
-    <el-table v-loading="listLoading" :data="list" style="width: 100%" element-loading-text="Loading" border fit highlight-current-row>
+    <el-table
+      v-loading="listLoading"
+      :data="list"
+      style="width: 100%"
+      element-loading-text="Loading"
+      border
+      fit
+      highlight-current-row
+    >
       <el-table-column label="编号" width="70" align="center">
-        <template v-slot="scope">
-          {{ scope.$index+1+(currentPage-1)*10 }}
-        </template>
+        <template v-slot="scope">{{ scope.$index+1+(currentPage-1)*10 }}</template>
       </el-table-column>
-      <el-table-column label="订单编号" width="360" align="center">
-        <template v-slot="scope">
-          {{ scope.row.productName }}
-        </template>
+      <el-table-column label="订单编号" width="180" align="center">
+        <template v-slot="scope">{{ scope.row.orderCode }}</template>
       </el-table-column>
-      <el-table-column label="用户名称" width="180" align="center">
-        <template v-slot="scope">
-          {{ scope.row.productName }}
-        </template>
+      <el-table-column label="收货人" width="180" align="center">
+        <template v-slot="scope">{{ scope.row.consignee }}</template>
       </el-table-column>
-      
-      <el-table-column label="创建时间" width="360" align="center">
-          <template v-slot="scope">
-            {{ scope.row.modifyTime | modifyTime }}
-          </template>
+      <el-table-column label="收货地址" width="180" align="center">
+        <template v-slot="scope">{{ scope.row.address }}</template>
       </el-table-column>
 
-      <el-table-column label="状态" width="180" align="center">
-        <template v-slot="scope">
-          {{ scope.row.productName }}
-        </template>
+      <el-table-column label="下单时间" width="360" align="center">
+        <template v-slot="scope">{{ scope.row.orderTime | modifyTime }}</template>
       </el-table-column>
+
+      <el-table-column label="联系电话" width="180" align="center">
+        <template v-slot="scope">{{ scope.row.phone }}</template>
+      </el-table-column>
+      <el-table-column label="订单总价" width="180" align="center">
+        <template v-slot="scope">{{ scope.row.totalPrices }}</template>
+      </el-table-column>
+      <el-table-column label="微信订单号" width="180" align="center">
+        <template v-slot="scope">{{ scope.row.transactionId }}</template>
+      </el-table-column>
+      <el-table-column label="微信用户名" width="180" align="center">
+        <template v-slot="scope">{{ scope.row.wxUserNickName }}</template>
+      </el-table-column>
+
       <el-table-column align="center" label="操作">
         <template v-slot="scope">
-          <el-button size="small"  type="primary" @click="handleClick(scope.$index, scope.row)">查看</el-button>
+          <el-button size="small" type="primary" @click="handleClick(scope.row.id)">订单详情</el-button>
           <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -55,8 +64,10 @@
 
 <script>
   import {
-    getInfoList
-  } from '@/api/homeManage'
+    getInfoList,
+     getDelete,
+     getInfo
+  } from '@/api/orderManage'
   import insertComponent from './insert.vue'
   import updateComponent from './update.vue'
   import deleteComponent from './delete.vue'
@@ -92,7 +103,8 @@
         formInline: {},
         activeName: '0',
         options: [],
-        input3:''
+        input3:'',
+       
       }
     },
     mounted() {
@@ -103,7 +115,7 @@
         this.listLoading = true
         getInfoList(this.currentPage, this.pageSize).then(response => {
           const result = response.data
-          console.log(result)
+          console.log(result,'infolist')
           if (result) {
             const data = result.data
             this.list = result.data
@@ -116,11 +128,39 @@
       handleEdit(index, row) {
         console.log(index, row);
       },
-      handleDelete(index, row) {
-        console.log(index, row);
+      handleDelete(id) {
+        
+        this.listLoading = true
+        getDelete(id).then(response => {
+          const result = response.data
+          console.log(result,'infolist')
+          if (result) {
+            const data = result.data
+            this.list = result.data
+            this.currentPage = result.pageNum
+            this.total = result.count
+          }
+          this.listLoading = false
+        })
+      
+        
+        
       },
-      handleClick(index,row) {
-        console.log(index, row);
+      handleClick(id) {
+
+        this.listLoading = true
+        getInfo(id).then(response => {
+          const result = response.data
+          console.log(result,'infolist')
+          if (result) {
+            const data = result.data
+            this.list = result.data
+            this.currentPage = result.pageNum
+            this.total = result.count
+          }
+          this.listLoading = false
+        })
+        
       },
       handleCurrentChange(val) {
         this.currentPage = val
@@ -131,5 +171,4 @@
 </script>
 
 <style scoped>
-
 </style>

@@ -17,8 +17,8 @@
       </el-col>
     </el-row>
     <el-dialog title="添加运费" :visible.sync="dialogFormVisibleAdd">
-      <el-form :model="form">
-        <el-form-item label="省份" :label-width="formLabelWidth">
+      <el-form :model="form" :rules="rules" ref="form">
+        <el-form-item label="省份" :label-width="formLabelWidth" prop="province">
           <el-input v-model="form.province" autocomplete="off" clearable ></el-input>
         </el-form-item>
         <el-form-item label="是否包邮" :label-width="formLabelWidth">
@@ -31,18 +31,18 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="价格" v-if="free()" :label-width="formLabelWidth">
+        <el-form-item label="价格" v-if="free()" :label-width="formLabelWidth" prop="postage" >
           <el-input v-model="form.postage"  autocomplete="off" clearable></el-input>
         </el-form-item>
       </el-form>
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
-        <el-button type="primary" @click="handleAdd">提交</el-button>
+        <el-button type="primary" @click="handleAdd()">提交</el-button>
       </div>
     </el-dialog>
     <el-dialog title="编辑商品类型" :visible.sync="dialogFormVisibleEdit">
-      <el-form :model="form">
+      <el-form :model="form" :rules="rules">
         <el-form-item label="编辑省份" :label-width="formLabelWidth">
           <el-input v-model="form.province" autocomplete="off" clearable :disabled="true"></el-input>
         </el-form-item>
@@ -56,7 +56,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="编辑价格"  :label-width="formLabelWidth">
+        <el-form-item label="编辑价格" v-if="free()"  :label-width="formLabelWidth">
           <el-input v-model="form.postage"  autocomplete="off" clearable></el-input>
         </el-form-item>
       </el-form>
@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import { getInfoList,postageAdd,SearchInfo } from "@/api/postage";
+import { getInfoList,postageAdd,SearchInfo, postageEdit } from "@/api/postage";
 
 import moment from "moment";
 moment.locale("zh-cn");
@@ -143,8 +143,8 @@ export default {
       openPage:true,
       form: {
         province: "",
-        isFree: "",
-        postage: "",
+        isFree: "1",
+        postage:'',
         // value:""
       },
       dialogFormVisibleEdit: false,
@@ -162,9 +162,22 @@ export default {
           label: "不是"
         }
       ],
+       rules: {
+          province: [
+            { required: true, message: '请输入省份或地区名', trigger: 'blur' },
+            { min: 0, max: 10, message: '长度在 0 到 10 个字符', trigger: 'blur' }
+          ],
+           postage: [
+            { required: true, message: '请输入价格', trigger: 'blur' },
+            {  min: 0, max: 5, type: 'number', message: '长度在 0 到 5个字符', trigger: 'blur' }
+          ]
+
+         }
       
-    };
+    }
+    
   },
+ 
   mounted() {
     this.getList();
   },
@@ -187,7 +200,19 @@ export default {
       });
     },
     handleAdd() {
+      
+      console.log(this.form,'添加操作')
       this.listLoading = true;
+
+
+      //  this.$refs[form].validate((valid) => {
+      //     if (valid) {
+      //       alert('submit!');
+      //     } else {
+      //       console.log('error submit!!');
+      //       return false;
+      //     }
+      //   });
      
       if(this.form.isFree==1){
         this.form.postage='0'
@@ -202,30 +227,41 @@ export default {
           this.currentPage = result.pageNum;
           this.total = result.count;
         }
+        this.form.postage='',
+        this.form.province=''
+        this.dialogFormVisibleAdd=false
         this.listLoading = false;
+        
       });
     },
     handleEdits() {
-      // this.listLoading = true;
-      console.log(this.form)
-      // getInfoList(this.currentPage, this.pageSize).then(response => {
-      //   const result = response.data;
-      //   console.log(result);
-      //   if (result) {
-      //     const data = result.data;
-      //     this.list = result.data;
-      //     this.currentPage = result.pageNum;
-      //     this.total = result.count;
-      //   }
-      //   this.listLoading = false;
-      // });
+      this.listLoading = true;
+      // if(this.form.isFree==0){
+      //   this.form.postage=='0'
+      // }
+      console.log(this.form,'bianji')
+      postageEdit(this.form).then(response => {
+        const result = response.data;
+        console.log(result,'编辑运费');
+        if (result) {
+          const data = result.data;
+          this.list = result.data;
+          this.currentPage = result.pageNum;
+          this.total = result.count;
+        }
+        this.form.postage='',
+        this.form.province=''
+        this.dialogFormVisibleEdit=false
+        this.listLoading = false;
+      });
     },
 
     handleEdit(data) {
       this.dialogFormVisibleEdit = true;
-      console.log(data)
+      console.log(data,'bianjiya')
       this.form.province=data.province
       this.form.postage=data.postage
+      this.form.id=data.id
       console.log(data.isFree)
       // if(data.isFree==0){
       //   console.log('vhufa')
@@ -265,8 +301,11 @@ export default {
     },
     free(){
       if(this.form.isFree==0){
+        
+        
         return true
       }else{
+        
         return false
       }
     }

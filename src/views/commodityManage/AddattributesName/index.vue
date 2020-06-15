@@ -78,7 +78,7 @@
         class="demo-ruleForm"
       >
         <el-form-item label="图片名" prop="imageName">
-          <el-input placeholder="图片名" v-model="ruleForm.productImageList.imageName"></el-input>
+          <el-input placeholder="图片名" v-model="ruleForm.productImageList.imageName" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item>
           <ImgUpload
@@ -268,6 +268,7 @@ export default {
     handleAvatarSuccess(imageUrl, res, file) {
       console.log('执行了',imageUrl, res, file, "789");
       this.ruleForm.productImageList.imageUrl = imageUrl;
+      this.ruleForm.productImageList.imageName=file.name
       this.fileName = file.name;
       // this.option.img = imageUrl;
       this.$nextTick(() => {

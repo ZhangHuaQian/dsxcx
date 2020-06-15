@@ -141,8 +141,7 @@ export function ReturnImg(data){
   return axios({
     url:ip+'/base/uploadImg',
     method:'post',
-    data:{
-      data
-    }
+    data:data
+    
   })
 }

@@ -131,15 +131,21 @@
       </el-table-column>
       <el-table-column label="跳转链接" width="360" align="center">
         <template v-slot="scope">{{scope.row.jumpLink}}</template>
-        
       </el-table-column>
       <el-table-column label="图片" width="180" align="center">
         <template v-slot="scope">
-          <el-image style="width: 50px; height: 50px" :src="scope.row.imageUrl" cover>
+          <el-image
+            style="width: 50px; height: 50px"
+            :src="scope.row.imageUrl"
+             
+            cover
+          >
             <div slot="error" class="image-slot">
               <i class="el-icon-picture-outline"></i>
             </div>
           </el-image>
+          
+
         </template>
       </el-table-column>
 
@@ -284,6 +290,11 @@ export default {
   },
   data() {
     return {
+      //  srcList:'',
+      srcList: [
+        "https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg",
+        "https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg"
+      ],
       listLoading: true,
       rules: {
         bannerName: [{ required: true, message: "请填写标题", trigger: "blur" }]
@@ -311,16 +322,16 @@ export default {
       dialogImageUrl: "",
       dialogFormVisibleSee: false,
       dialogFormVisibleTJ: false,
+      dialogFormVisibleSeeImage: false,
       fileList: [],
       imageUrl: "",
       form: {
         id: "",
         bannerName: "",
         imageUrl: "",
-        synopsis:'',
-        jumpLink:'',
-        createUser: "",
-        
+        synopsis: "",
+        jumpLink: "",
+        createUser: ""
       },
       formLabelWidth: "120px",
 
@@ -446,20 +457,20 @@ export default {
           this.currentPage = result.pageNum;
           this.total = result.count;
           this.url = result.imageUrl;
+          this.srcList = result.imageUrl;
         }
         this.listLoading = false;
       });
     },
 
     bannerEdit(row) {
-      console.log(row,'row');
+      console.log(row, "row");
       this.form = row;
-      console.log(this.form,'form');
+      console.log(this.form, "form");
       this.dialogFormVisibleEdit = true;
     },
     bannerEditend() {
-      
-      console.log(this.form,'this.form')
+      console.log(this.form, "this.form");
       bannerEdits(this.form).then(response => {
         const result = response.data;
         console.log(result);
@@ -472,8 +483,7 @@ export default {
         }
         this.dialogFormVisibleEdit = false;
         this.getList();
-        this.bannerEditClose()
-
+        this.bannerEditClose();
       });
     },
     bannerSee(id) {
@@ -552,8 +562,8 @@ export default {
       // this.form=''\
     },
     Search() {
-      this.form.bannerName= this.input3;
-      console.log(this.input3,this.form,'rt 执行了');
+      this.form.bannerName = this.input3;
+      console.log(this.input3, this.form, "rt 执行了");
       bannerSearch(this.input3, this.openPage).then(response => {
         const result = response.data;
         console.log(result);

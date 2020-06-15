@@ -50,11 +50,12 @@ export default {
   methods: {
     
     onAvatarSuccess(res, file, fileList) {
-      console.log(file,'jb')
-      const data = res.data
+      console.log(file,'45646',res,'jb')
+      
+      console.log(res,'res')
       // this.$message.success('上传成功！')
       // this.imageUrl = serverip + data.src
-       this.imageUrl = data.src
+       this.imageUrl = res
       this.$emit('onAvatarSuccess', this.imageUrl, res, file, fileList)
     },
     beforeImageUpload(file) {

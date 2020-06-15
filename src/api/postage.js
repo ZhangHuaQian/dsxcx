@@ -26,12 +26,37 @@ export function postageAdd(data) {
     url: ip + '/postage/insertBatch',
     method: 'post',
 
-    data: {
+    data: [{
       
       province:data.province,
       postage:data.postage,
-      isFree:data.isFree
-    }
+      isFree:data.isFree,
+      
+    }]
+  })
+}
+export function postageEdit(data) {
+  return axios({
+    url: ip + '/postage/insertBatch',
+    method: 'post',
+
+    data:[{
+      
+      province:data.province,
+      postage:parseInt(data.postage),
+      isFree:data.isFree,
+      id:data.id
+      
+    }]
+    // data: {
+      
+    //   province:"上海",
+    //   postage:0,
+    //   isFree:"1",
+    //   id:data.id
+      
+    // }
+    
   })
 }
 

@@ -7,9 +7,7 @@ export function getInfoList(data){
   return axios({
     url:ip+'/product/selectList',
     method:'post',
-    data:{
-      data
-    }
+    data:data.json?data:Qs.stringify({openPage:data.openPage,page:data.currentPage,limit:data.pageSize,form:data.form})
   })
 }
 
@@ -17,9 +15,7 @@ export function getTypeList(data){
   return axios({
     url:ip+'/productType/selectList',
     method:'post',
-    data:{
-      data
-    }
+    data:data.json?data:Qs.stringify({openPage:data.openPage,page:data.currentPage,limit:data.pageSize,form:data.form,isIndex:data.isIndex})
   })
 }
 

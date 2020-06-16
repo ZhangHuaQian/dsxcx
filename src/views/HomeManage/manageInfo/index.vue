@@ -139,6 +139,7 @@
       background
       layout="total, prev, pager, next, jumper"
       :page-size="pageSize"
+      :current-page="currentPage"
       :total="total"
       @current-change="handleCurrentChange"
     />
@@ -204,7 +205,13 @@
     methods: {
       getList(){
         this.listLoading = true
-        getInfoList().then(response => {
+        const data = {
+        openPage: this.openPage,
+        currentPage: this.currentPage,
+        pageSize: this.pageSize,
+        form: this.form
+      };
+        getInfoList(data).then(response => {
           const result = response.data
           console.log(result,'888')
           if (result) {
@@ -259,7 +266,7 @@
       this.dialogFormVisibleSee = true;
       InfoSee(id).then(response => {
         const result = response.data;
-        console.log(result);
+        console.log(result,'12580');
         if (result) {
           // const data = result.data;
           // this.list = result.data;
@@ -303,14 +310,25 @@
         }
       }
     },
-    handleAdd(){},
+    handleAdd(){
+      this.dialogFormVisibleAdd=false
+    },
       handleClick(index,row) {
         console.log(index, row);
       },
-      handleCurrentChange(val) {
-        this.currentPage = val
-        this.getList()
-      }
+     handleSizeChange(val) {
+      console.log("789");
+      this.currentPage += 1;
+      
+      this.getList()
+    },
+    handleCurrentChange(val) {
+      console.log("456");
+      this.currentPage = val;
+
+      
+      this.getList()
+    },
     }
   }
 </script>

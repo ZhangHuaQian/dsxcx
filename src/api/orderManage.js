@@ -7,30 +7,39 @@ export function getInfoList(data){
   return axios({
     url:ip+'/order/selectList',
     method:'post',
-    data:{
-      page: data.currentPage,
-      limit:data.pageSize
-    }
+    data:data.json?data:Qs.stringify({openPage:data.openPage,page:data.currentPage,limit:data.pageSize,form:data.form})
   })
 }
  
- export function getDelete (id){
+ export function getDelete(data){
   return axios({
     url:ip+'/order/delete',
     method:'post',
-    data:{id}
+    data:data.json?data:Qs.stringify({id:data.id})
   })
 }
-export function getInfo (form){
+export function ManageInfo(data){
+  console.log(data,'qingqiuti')
   return axios({
     url:ip+'/order/select',
     method:'post',
-    // data:form.json?form:Qs.stringify(form)
-    data:{
-      id:form
-    }
+    data:data.json?data:Qs.stringify({id:data.id})
+    // data:{
+    //   id:data.id
+    // }
   })
 }
+export function orderEdit(data){
+  
+  return axios({
+    url:ip+'/order/update',
+    method:'post',
+    data:data.json?data:Qs.stringify({id:data.id,status:data.status})
+    
+  })
+}
+
+
 
 
 // export function getTypeList(data){

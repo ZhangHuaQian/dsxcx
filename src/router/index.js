@@ -105,18 +105,18 @@ export const constantRoutes = [
     }]
   },
 
-  {
-    path: '/Announce',
-    name: 'Announce',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/Announce/index'),
-        meta: { title: '发布公告', icon: 'example' }
-      }
-    ]
-  },
+  // {
+  //   path: '/Announce',
+  //   name: 'Announce',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/Announce/index'),
+  //       meta: { title: '发布公告', icon: 'example' }
+  //     }
+  //   ]
+  // },
   {
     path: '/postage',
     name: 'postage',

@@ -16,40 +16,53 @@ import Qs from 'qs'
 //   })
 // }
 
-export function getInfoList(openPage, limit, page, form) {
+export function getInfoList(data) {
   return axios({
     url: ip + '/banner/selectList',
     method: 'post',
 
-    data: {
-      openPage,//是否开启分页
+    // data: {
+    //   openPage,//是否开启分页
 
-      page,//分页页数
-      limit,//分页行数
-      form
+    //   page,//分页页数
+    //   limit,//分页行数
+    //   form
 
-    }
+    // }
+    data:data.json?data:Qs.stringify({openPage:data.openPage,page:data.currentPage,limit:data.pageSize,form:data.form})
   })
 }
 
-export function getInfoListPage(openPage, limit, page, form) {
+// export function getInfoListPage(data) {
+// console.log(data,'这是分页吗')
+  
+
+//   return axios({
+//     url: ip + '/banner/selectList',
+//     method: 'post',
+    
+//     data:data.json?data:Qs.stringify({openPage:data.openPage,page:data.currentPage,limit:data.pageSize})
+//   })
+// }
+
+// export function getInfoListPage(openPage, limit, page, form) {
 
   
 
-  return axios({
-    url: ip + '/banner/selectList',
-    method: 'post',
-    // headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-    data: {
-      openPage,//是否开启分页
+//   return axios({
+//     url: ip + '/banner/selectList',
+//     method: 'post',
+//     // headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+//     data: {
+//       openPage,//是否开启分页
 
-      page,//分页页数
-      limit,//分页行数
+//       page,//分页页数
+//       limit,//分页行数
 
 
-    }
-  })
-}
+//     }
+//   })
+// }
 
 
 export function insert(name, form, jiekou) {
@@ -116,15 +129,17 @@ export function bannerDelete(id) {
   })
 }
 
-export function bannerSearch(data, openPage) {
+export function bannerSearch(data) {
+  console.log(data,'搜索')
 
   return axios({
     url: ip + "/banner/selectList ",
     method: 'post',
-    data: {
-      bannerName: data,
-      openPage
-    }
+    // data: {
+    //   bannerName: data,
+    //   openPage
+    // }
+    data:data.json?data:Qs.stringify({openPage:data.openPage,bannerName:data.bannerName})
   })
 }
 

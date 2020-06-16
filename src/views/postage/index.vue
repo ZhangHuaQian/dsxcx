@@ -3,7 +3,7 @@
     <el-row :gutter="20">
       <el-col :span="8">
         <div style="margin-top: 15px;margin-bottom: 50px;width:20vw">
-          <el-input placeholder="请输入内容" v-model="input3" class="input-with-select" clearable>
+          <el-input placeholder="请输入内容" v-model="input3" @input="Search" class="input-with-select" clearable>
             <el-button slot="append" icon="el-icon-search" @click="Search"></el-button>
           </el-input>
         </div>
@@ -42,8 +42,8 @@
       </div>
     </el-dialog>
     <el-dialog title="编辑商品类型" :visible.sync="dialogFormVisibleEdit">
-      <el-form :model="form" :rules="rules">
-        <el-form-item label="编辑省份" :label-width="formLabelWidth">
+      <el-form :model="form" :rules="rules" ref="form">
+        <el-form-item label="编辑省份" :label-width="formLabelWidth" prop="province">
           <el-input v-model="form.province" autocomplete="off" clearable :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="是否包邮" :label-width="formLabelWidth">
@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import { getInfoList,postageAdd,SearchInfo, postageEdit } from "@/api/postage";
+import { getInfoList,postageAdd,SearchInfo, postageEdit, postageSearch } from "@/api/postage";
 
 import moment from "moment";
 moment.locale("zh-cn");
@@ -187,7 +187,13 @@ export default {
   methods: {
     getList() {
       this.listLoading = true;
-      getInfoList(this.currentPage, this.pageSize).then(response => {
+      const data = {
+        openPage: this.openPage,
+        currentPage: this.currentPage,
+        pageSize: this.pageSize,
+        form: this.form
+      };
+      getInfoList(data).then(response => {
         const result = response.data;
         console.log(result);
         if (result) {
@@ -200,19 +206,12 @@ export default {
       });
     },
     handleAdd() {
-      
-      console.log(this.form,'添加操作')
+
+      this.$refs.form.validate(valid => {
+        if (valid) {
+
+           console.log(this.form,'添加操作')
       this.listLoading = true;
-
-
-      //  this.$refs[form].validate((valid) => {
-      //     if (valid) {
-      //       alert('submit!');
-      //     } else {
-      //       console.log('error submit!!');
-      //       return false;
-      //     }
-      //   });
      
       if(this.form.isFree==1){
         this.form.postage='0'
@@ -230,9 +229,21 @@ export default {
         this.form.postage='',
         this.form.province=''
         this.dialogFormVisibleAdd=false
+        this.getList()
         this.listLoading = false;
         
       });
+          
+
+
+         
+        } else {
+          this.$message("有内容没有填写！");
+        }
+      });
+
+      
+     
     },
     handleEdits() {
       this.listLoading = true;
@@ -252,6 +263,7 @@ export default {
         this.form.postage='',
         this.form.province=''
         this.dialogFormVisibleEdit=false
+        this.getList()
         this.listLoading = false;
       });
     },
@@ -298,6 +310,27 @@ export default {
       console.log('执行了',this.form.isFree);
       // this.free()
       
+    },
+    Search() {
+      console.log('触发了',this.input3)
+      this.form.province = this.input3;
+      const data={
+        province:this.input3,
+        openPage:false
+      }
+      console.log(data, "rt 执行了");
+      postageSearch(data).then(response => {
+        const result = response.data;
+        console.log(result);
+        if (result) {
+          const data = result.data;
+          this.list = result.data;
+          this.currentPage = result.pageNum;
+          this.total = result.count;
+          this.form.bannerName = "";
+          this.url = result.imageUrl;
+        }
+      });
     },
     free(){
       if(this.form.isFree==0){

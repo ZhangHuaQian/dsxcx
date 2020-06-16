@@ -3,7 +3,13 @@
     <el-row :gutter="20">
       <el-col :span="8">
         <div style="margin-top: 15px;margin-bottom: 50px;width:20vw">
-          <el-input placeholder="请输入内容" v-model="input3" class="input-with-select" clearable>
+          <el-input
+            placeholder="请输入内容"
+            v-model="input3"
+            @input="Search"
+            class="input-with-select"
+            clearable
+          >
             <el-button slot="append" icon="el-icon-search" @click="Search"></el-button>
           </el-input>
         </div>
@@ -69,7 +75,7 @@
         <el-form-item label="标题" prop="bannerName">
           <el-input v-model="form.bannerName" placeholder="请输入标题" />
         </el-form-item>
-        <el-form-item label="简介">
+        <el-form-item label="简介" prop="synopsis">
           <el-input v-model="form.synopsis" placeholder="请输入简介" />
         </el-form-item>
         <el-form-item label="图片详情">
@@ -77,10 +83,10 @@
           <!-- <el-image style="width: 100px; height: 100px" :src="form.imageUrl" fill></el-image> -->
           <ImgUpload :geturl="form.imageUrl" @onAvatarSuccess="handleAvatarSuccess" />
         </el-form-item>
-        <el-form-item label="轮播图地址" :label-width="formLabelWidth">
+        <el-form-item label="轮播图地址" :label-width="formLabelWidth" prop="imageUrl">
           <el-input v-model="form.imageUrl" autocomplete="off" clearable disabled></el-input>
         </el-form-item>
-        <el-form-item label="链接">
+        <el-form-item label="链接" prop="jumpLink">
           <el-input v-model="form.jumpLink" placeholder="请输入链接">
             <template slot="prepend">Http://</template>
           </el-input>
@@ -134,18 +140,11 @@
       </el-table-column>
       <el-table-column label="图片" width="180" align="center">
         <template v-slot="scope">
-          <el-image
-            style="width: 50px; height: 50px"
-            :src="scope.row.imageUrl"
-             
-            cover
-          >
+          <el-image style="width: 50px; height: 50px" :src="scope.row.imageUrl" cover>
             <div slot="error" class="image-slot">
               <i class="el-icon-picture-outline"></i>
             </div>
           </el-image>
-          
-
         </template>
       </el-table-column>
 
@@ -187,21 +186,21 @@
           <!-- <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button> -->
           <el-button type="primary" size="mini" @click="bannerEdit(scope.row)">编辑</el-button>
           <el-dialog title="编辑轮播图" :visible.sync="dialogFormVisibleEdit">
-            <el-form :model="form">
+            <el-form ref="form" :model="form" :rules="rules">
               <el-form-item label="轮播图ID" :label-width="formLabelWidth">
                 <el-input v-model="form.id" :disabled="true" autocomplete="off"></el-input>
               </el-form-item>
 
-              <el-form-item label="轮播图名称" :label-width="formLabelWidth">
+              <el-form-item label="轮播图名称" :label-width="formLabelWidth" prop="bannerName">
                 <el-input v-model="form.bannerName" autocomplete="off"></el-input>
               </el-form-item>
-              <el-form-item label="简介" :label-width="formLabelWidth">
+              <el-form-item label="简介" :label-width="formLabelWidth" prop="synopsis">
                 <el-input v-model="form.synopsis" autocomplete="off" />
               </el-form-item>
               <el-form-item label="轮播图地址" :label-width="formLabelWidth">
                 <el-input v-model="form.imageUrl" autocomplete="off" :disabled="true"></el-input>
               </el-form-item>
-              <el-form-item label="跳转链接" :label-width="formLabelWidth">
+              <el-form-item label="跳转链接" :label-width="formLabelWidth" prop="jumpLink">
                 <el-input v-model="form.jumpLink" autocomplete="off" />
               </el-form-item>
             </el-form>
@@ -297,7 +296,14 @@ export default {
       ],
       listLoading: true,
       rules: {
-        bannerName: [{ required: true, message: "请填写标题", trigger: "blur" }]
+        bannerName: [
+          { required: true, message: "请填写标题", trigger: "blur" }
+        ],
+        imageUrl: [
+          { required: true, message: "请上传图片获取图片地址", trigger: "blur" }
+        ],
+        jumpLink: [{ required: true, message: "请填写链接", trigger: "blur" }],
+        synopsis: [{ required: true, message: "请填写简介", trigger: "blur" }]
         // url: [{ required: true, message: '请填写内容', trigger: 'blur' }]
       },
       list: null,
@@ -367,6 +373,7 @@ export default {
   },
   mounted() {
     this.getList();
+    this.getInfoListPage;
   },
   created() {
     if (this.getform) {
@@ -443,12 +450,13 @@ export default {
     getList() {
       this.listLoading = true;
       console.log(this.openPage, this.currentPage, this.pageSize, this.form);
-      getInfoList(
-        this.openPage,
-        this.currentPage,
-        this.pageSize,
-        this.form
-      ).then(response => {
+      const data = {
+        openPage: this.openPage,
+        currentPage: this.currentPage,
+        pageSize: this.pageSize,
+        form: this.form
+      };
+      getInfoList(data).then(response => {
         const result = response.data;
         console.log(result);
         if (result) {
@@ -470,21 +478,42 @@ export default {
       this.dialogFormVisibleEdit = true;
     },
     bannerEditend() {
-      console.log(this.form, "this.form");
-      bannerEdits(this.form).then(response => {
-        const result = response.data;
-        console.log(result);
-        if (result) {
-          const data = result.data;
-          this.list = result.data;
-          this.currentPage = result.pageNum;
-          this.total = result.count;
-          this.url = result.imageUrl;
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          bannerEdits(this.form).then(response => {
+            const result = response.data;
+            console.log(result);
+            if (result) {
+              const data = result.data;
+              this.list = result.data;
+              this.currentPage = result.pageNum;
+              this.total = result.count;
+              this.url = result.imageUrl;
+            }
+            this.dialogFormVisibleEdit = false;
+            this.getList();
+            this.bannerEditClose();
+          });
+        } else {
+          this.$message("有内容没有填写！");
         }
-        this.dialogFormVisibleEdit = false;
-        this.getList();
-        this.bannerEditClose();
       });
+
+      // console.log(this.$refs.form, "this.form");
+      // bannerEdits(this.form).then(response => {
+      //   const result = response.data;
+      //   console.log(result);
+      //   if (result) {
+      //     const data = result.data;
+      //     this.list = result.data;
+      //     this.currentPage = result.pageNum;
+      //     this.total = result.count;
+      //     this.url = result.imageUrl;
+      //   }
+      //   this.dialogFormVisibleEdit = false;
+      //   this.getList();
+      //   this.bannerEditClose();
+      // });
     },
     bannerSee(id) {
       this.dialogFormVisibleSee = true;
@@ -562,9 +591,14 @@ export default {
       // this.form=''\
     },
     Search() {
+      console.log("触发了", this.input3);
       this.form.bannerName = this.input3;
-      console.log(this.input3, this.form, "rt 执行了");
-      bannerSearch(this.input3, this.openPage).then(response => {
+      const data = {
+        bannerName: this.input3,
+        openPage: false
+      };
+      console.log(data, "rt 执行了");
+      bannerSearch(data).then(response => {
         const result = response.data;
         console.log(result);
         if (result) {
@@ -594,9 +628,9 @@ export default {
       this.$refs.cropper.getCropBlob(data => {
         formData.append("file", data, this.fileName);
         uploadFile(formData).then(response => {
-          console.log(response.data.data.src, "123");
+          console.log(response.data, "123");
           // this.form.image = this.serverip + response.data.data.src;
-          this.form.imageUrl = response.data.data.src;
+          this.form.imageUrl = response.data;
           this.cropperDialogVisible = false;
           this.dialogVisibleTJ = true;
           // this.dialogFormVisible = false;
@@ -621,48 +655,53 @@ export default {
     handleSizeChange(val) {
       console.log("789");
       this.currentPage += 1;
-      this.fetchData();
+      // this.fetchData();
+      this.getList();
     },
     handleCurrentChange(val) {
       console.log("456");
       this.currentPage = val;
 
-      this.fetchData();
-    },
-    fetchData() {
-      this.listLoading = true;
-
-      (this.currentPage = 2),
-        (this.pageSize = 10),
-        console.log(
-          "是否开启",
-          this.openPage,
-          "行数",
-          this.pageSize,
-          "页数",
-          this.currentPage,
-          this.form,
-          "78542"
-        );
-      getInfoListPage(
-        this.openPage,
-
-        this.pageSize,
-        this.currentPage,
-        this.form
-      ).then(response => {
-        const result = response.data;
-        console.log(result);
-        if (result) {
-          const data = result.data;
-          this.list = data.data;
-          this.currentPage = data.pageNum;
-          this.total = data.count;
-          this.url = result.imageUrl;
-        }
-        this.listLoading = false;
-      });
+      // this.fetchData();
+      this.getList();
     }
+
+    // fetchData() {
+    //   this.listLoading = true;
+
+    //   (this.currentPage = 2),
+    //     (this.pageSize = 10),
+    //     console.log(
+    //       "是否开启",
+    //       this.openPage,
+    //       "行数",
+    //       this.pageSize,
+    //       "页数",
+    //       this.currentPage,
+    //       this.form,
+    //       "78542"
+    //     );
+    //   const data = {
+    //     openPage: this.openPage,
+
+    //     pageSize: this.pageSize,
+    //     currentPage: this.currentPage,
+    //     form: this.form
+    //   };
+
+    //   getInfoListPage(data).then(response => {
+    //     const result = response.data;
+    //     console.log(result, "111");
+    //     if (result) {
+    //       const data = result.data;
+    //       this.list = data.data;
+    //       this.currentPage = data.pageNum;
+    //       this.total = data.count;
+    //       this.url = result.imageUrl;
+    //     }
+    //     this.listLoading = false;
+    //   });
+    // }
   }
 };
 </script>

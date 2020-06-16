@@ -17,8 +17,8 @@
       </el-col>
     </el-row>
     <el-dialog title="添加商品类型" :visible.sync="dialogFormVisibleAdd">
-      <el-form :model="form">
-        <el-form-item label="商品类型名" :label-width="formLabelWidth">
+      <el-form :model="form" ref="form" :rules="rules">
+        <el-form-item label="商品类型名" :label-width="formLabelWidth" prop="typeName">
           <el-input v-model="form.typeName" autocomplete="off" clearable placeholder="请输入商品类型名"></el-input>
         </el-form-item>
         <el-form-item label="简介"  :label-width="formLabelWidth">
@@ -37,11 +37,11 @@
       </div>
     </el-dialog>
     <el-dialog title="编辑商品类型" :visible.sync="dialogFormVisibleEdit">
-      <el-form :model="form">
-        <el-form-item label="编辑商品ID名" :label-width="formLabelWidth">
+      <el-form ref="form" :model="form" :rules="rules">
+        <el-form-item label="编辑商品ID名" :label-width="formLabelWidth" >
           <el-input v-model="form.id" autocomplete="off" clearable :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="编辑商品类型名" :label-width="formLabelWidth">
+        <el-form-item label="编辑商品类型名" :label-width="formLabelWidth" prop="typeName">
           <el-input v-model="form.typeName" autocomplete="off" clearable></el-input>
         </el-form-item>
       </el-form>
@@ -154,6 +154,10 @@ export default {
   },
   data() {
     return {
+       rules: {
+        typeName: [{ required: true, message: "请填写商品类型名", trigger: "blur" }],
+        
+      },
       listLoading: true,
       list: null,
       currentPage: 1, // 当前页码
@@ -199,7 +203,11 @@ export default {
     },
     handleAdd() {
       console.log(this.form.synopsis);
-      TypeAdd(this.form.typeName, this.isIndex,this.form.synopsis).then(response => {
+
+      this.$refs.form.validate(valid => {
+        if (valid) {
+
+          TypeAdd(this.form.typeName, this.isIndex,this.form.synopsis).then(response => {
         const result = response.data;
         // console.log(result, "homem");
         if (result) {
@@ -217,6 +225,17 @@ export default {
         }
       }
       this.getList();
+          
+
+
+         
+        } else {
+          this.$message("有内容没有填写！");
+        }
+      });
+
+
+      
 
       // console.log(index, row);
     },
@@ -238,7 +257,10 @@ export default {
       (this.dialogFormVisibleEdit = true), (this.form = data);
     },
     handleEdits() {
-      TypeEdit(this.form, this.isIndex).then(response => {
+
+        this.$refs.form.validate(valid => {
+        if (valid) {
+          TypeEdit(this.form, this.isIndex).then(response => {
         const result = response.data;
         // console.log(result, "homem");
         if (result) {
@@ -251,6 +273,17 @@ export default {
       
       this.dialogFormVisibleEdit = false;
       this.getList();
+
+
+         
+        } else {
+          this.$message("有内容没有填写！");
+        }
+      });
+
+
+
+      
     },
     handleSee(id) {
       this.dialogFormVisibleSee = true;

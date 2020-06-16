@@ -28,7 +28,10 @@ axios.interceptors.response.use(
             if (results.status === '1') {
               Message.success(results.msg)
             } else {
-              Message.error(results.msg)
+              // 判断是否有返回值
+              if(results.msg){
+                Message.error(results.msg)
+              }
             }
           }
           break

@@ -143,16 +143,16 @@
           <el-input v-model="dynamicValidateForm.Attributes[indexS].attributesName"></el-input>
         </el-form-item>
         <el-form-item
-          v-for="(domain, index) in dynamicValidateForm.Attributes[indexS].domains"
+          v-for="(domain, indexY) in dynamicValidateForm.Attributes[indexS].valueList"
           :label="'商品属性值' + index"
-          :key="domain.id"
-          :prop="'domains.' + index + '.value'"
+          :key="indexY"
+          :prop="'valueList.' + index + '.value'"
           :rules="{
       required: true, message: '域名不能为空', trigger: 'blur'
     }"
         >
-          <el-input v-model="domain.value"></el-input>
-          <el-button @click.prevent="removeDomain(indexS,domain.id)">删除</el-button>
+          <el-input v-model="domain.attributesValue"></el-input>
+          <el-button @click.prevent="removeDomain(indexS,indexY)">删除</el-button>
         </el-form-item>
         <el-form-item>
           <el-button @click="addDomain(indexS)">新增商品属性值</el-button>
@@ -190,21 +190,17 @@ export default {
       dynamicValidateForm: {
         Attributes: [
           {
-            attributesName: "",
-            domains: [
+            productId:this.productId,
+            attributesName: "123",
+            valueList: [
               {
-                value: "",
-                id: "0"
+                attributesValue: "456",
+                
               }
             ]
           }
         ]
-        // domains: [
-        //   {
-        //     value: ""
-        //   }
-        // ],
-        // email: ""
+        
       },
       AttributeData:'',
       ruleForm: {
@@ -303,15 +299,7 @@ export default {
         console.log(result);
         if (result) {
           const data = result.data;
-          // for(let i = 0; i < data.length; i++) {
-          //   this.options+=[{
-          //     value:i,
-          //     label:result.data[i].typeName
-          //   }]
-          //   // this.options[i].label = result.data[i].typeName;
-          //   console.log(result.data[i].typeName);
-          // }
-          // this.options.label=result.date.typeName
+      
           this.options = result.data;
           console.log(this.options);
 
@@ -403,7 +391,7 @@ export default {
       this.fileName = file.name;
       // this.option.img = imageUrl;
       this.$nextTick(() => {
-        // this.option.img = imageUrl;
+       
         this.cropperDialogVisible = true;
       });
     },
@@ -411,52 +399,34 @@ export default {
       return moment(date).format(str);
     },
     removeDomain(item, item1) {
-      console.log(this.dynamicValidateForm.Attributes[item].domains, "id");
-      // var index = this.dynamicValidateForm.domains.indexOf(item);
-
-      // if (index !== -1) {
-      this.dynamicValidateForm.Attributes[item].domains.splice(item1, 1);
-      // }
+      console.log(this.dynamicValidateForm.Attributes[item].valueList, "id");
+     
+      this.dynamicValidateForm.Attributes[item].valueList.splice(item1, 1);
+      
     },
     addAttributes() {
       this.dynamicValidateForm.Attributes.push({
+        productId:this.productId,
         attributesName: "",
-        domains: [
+        valueList: [
           {
-            value: "",
-            id: this.dynamicValidateForm.Attributes.length
+            attributesValue: "",
+           
           }
         ]
       });
     },
     addDomain(indexS) {
       console.log(indexS, this.dynamicValidateForm.Attributes[indexS]);
-      this.dynamicValidateForm.Attributes[indexS].domains.push({
-        value: "",
-        id: ""
+      this.dynamicValidateForm.Attributes[indexS].valueList.push({
+        attributesValue: "",
+        // id: ""
       });
     },
     AttributeADD() {
       // dialogFormVisibleAddABN = false
       console.log(this.dynamicValidateForm, "提交的");
-      // const AttributeData = "";
-      for (let i = 0; i < this.dynamicValidateForm.Attributes.length; i++) {
-        for (let j = 0;j < this.dynamicValidateForm.Attributes[i].domains.length;j++) {
-          this.AttributeData+=`
-            {
-              productId: ${this.productId},
-              attributesName: ${this.dynamicValidateForm.Attributes[i].attributesName},
-              valueList: [
-            {
-                attributesValue: ${this.dynamicValidateForm.Attributes[i].domains[j].value}
-            }
-        ]
-            }
-          `
-          
-        }
-      }
-      console.log(this.AttributeData,'上交的数据')
+      
       const data = [
         {
          

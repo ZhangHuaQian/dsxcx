@@ -118,6 +118,51 @@
         <el-button @click="resetForm('ruleForm')">重置</el-button>
       </el-form-item>
     </el-form>
+
+    <!-- 添加商品属性 -->
+    <el-dialog title="添加商品属性" :visible.sync="dialogFormVisibleAddABN">
+      <el-button @click="addAttributes">新增商品属性名</el-button>
+      <el-form
+        :model="dynamicValidateForm"
+        ref="dynamicValidateForm"
+        label-width="100px"
+        class="demo-dynamic"
+        v-for="(Attributes,indexS) in dynamicValidateForm.Attributes"
+        :key="indexS"
+        style="border:1px solid red;margin:10px;padding:5px"
+      >
+        <el-form-item>{{productId}}</el-form-item>
+        <el-form-item
+          prop="email"
+          :label="'商品属性名'+indexS"
+          :rules="[
+      { required: true, message: '商品属性名', trigger: 'blur' },
+      { type: 'string', message: '商品属性名', trigger: ['blur', 'change'] }
+    ]"
+        >
+          <el-input v-model="dynamicValidateForm.Attributes[indexS].attributesName"></el-input>
+        </el-form-item>
+        <el-form-item
+          v-for="(domain, index) in dynamicValidateForm.Attributes[indexS].domains"
+          :label="'商品属性值' + index"
+          :key="domain.id"
+          :prop="'domains.' + index + '.value'"
+          :rules="{
+      required: true, message: '域名不能为空', trigger: 'blur'
+    }"
+        >
+          <el-input v-model="domain.value"></el-input>
+          <el-button @click.prevent="removeDomain(indexS,domain.id)">删除</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="addDomain(indexS)">新增商品属性值</el-button>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleAddABN = false">取 消</el-button>
+        <el-button type="primary" @click="AttributeADD">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -142,6 +187,26 @@ export default {
   filters: {},
   data() {
     return {
+      dynamicValidateForm: {
+        Attributes: [
+          {
+            attributesName: "",
+            domains: [
+              {
+                value: "",
+                id: "0"
+              }
+            ]
+          }
+        ]
+        // domains: [
+        //   {
+        //     value: ""
+        //   }
+        // ],
+        // email: ""
+      },
+      AttributeData:'',
       ruleForm: {
         productName: "",
         price: "",
@@ -169,6 +234,8 @@ export default {
 
       options: "",
       value1: [],
+      productId: "",
+      dialogFormVisibleAddABN: false,
 
       rules: {
         productName: [
@@ -226,6 +293,7 @@ export default {
   },
   mounted() {
     this.getList();
+    console.log(this.dynamicValidateForm, "98");
   },
   methods: {
     getList() {
@@ -255,6 +323,7 @@ export default {
     },
 
     submitForm(formName) {
+      this.dialogFormVisibleAddABN = true;
       this.$refs[formName].validate(valid => {
         if (valid) {
           // alert("submit!");
@@ -311,12 +380,13 @@ export default {
         };
         productInsert(data).then(response => {
           const result = response.data;
-          // console.log(result, "执行了");
+          console.log(result, "执行了951");
           if (result) {
             const data = result.data;
             this.list = result.data;
             this.currentPage = result.pageNum;
             this.total = result.count;
+            this.productId = result.productId;
           }
           this.listLoading = false;
         });
@@ -339,6 +409,71 @@ export default {
     },
     getMoment(date, str) {
       return moment(date).format(str);
+    },
+    removeDomain(item, item1) {
+      console.log(this.dynamicValidateForm.Attributes[item].domains, "id");
+      // var index = this.dynamicValidateForm.domains.indexOf(item);
+
+      // if (index !== -1) {
+      this.dynamicValidateForm.Attributes[item].domains.splice(item1, 1);
+      // }
+    },
+    addAttributes() {
+      this.dynamicValidateForm.Attributes.push({
+        attributesName: "",
+        domains: [
+          {
+            value: "",
+            id: this.dynamicValidateForm.Attributes.length
+          }
+        ]
+      });
+    },
+    addDomain(indexS) {
+      console.log(indexS, this.dynamicValidateForm.Attributes[indexS]);
+      this.dynamicValidateForm.Attributes[indexS].domains.push({
+        value: "",
+        id: ""
+      });
+    },
+    AttributeADD() {
+      // dialogFormVisibleAddABN = false
+      console.log(this.dynamicValidateForm, "提交的");
+      // const AttributeData = "";
+      for (let i = 0; i < this.dynamicValidateForm.Attributes.length; i++) {
+        for (let j = 0;j < this.dynamicValidateForm.Attributes[i].domains.length;j++) {
+          this.AttributeData+=`
+            {
+              productId: ${this.productId},
+              attributesName: ${this.dynamicValidateForm.Attributes[i].attributesName},
+              valueList: [
+            {
+                attributesValue: ${this.dynamicValidateForm.Attributes[i].domains[j].value}
+            }
+        ]
+            }
+          `
+          
+        }
+      }
+      console.log(this.AttributeData,'上交的数据')
+      const data = [
+        {
+         
+        }
+      ];
+
+      AttributeInsert(data).then(response => {
+        const result = response.data;
+        // console.log(result, "执行了");
+        if (result) {
+          const data = result.data;
+          this.list = result.data;
+          this.currentPage = result.pageNum;
+          this.total = result.count;
+        }
+        this.listLoading = false;
+      });
     }
 
     // getList() {

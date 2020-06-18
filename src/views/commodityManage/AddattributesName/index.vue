@@ -11,10 +11,12 @@
         <el-input v-model="ruleForm.productName"></el-input>
       </el-form-item>
       <el-form-item label="价格" prop="price">
-        <el-input v-model="ruleForm.price"></el-input>
+        <!-- <el-input v-model="ruleForm.price"></el-input> -->
+        <el-input-number v-model="ruleForm.price"  :step="0.01" :min="0.01" ></el-input-number>
       </el-form-item>
       <el-form-item label="库存" prop="stock">
-        <el-input v-model="ruleForm.stock"></el-input>
+        <!-- <el-input v-model="ruleForm.stock"></el-input> -->
+        <el-input-number v-model="ruleForm.stock" :min="0"></el-input-number>
       </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-radio-group v-model="ruleForm.status">
@@ -60,17 +62,20 @@
         label-width="100px"
         class="demo-ruleForm"
       >
-        <el-form-item label="商品折扣" prop="discount">
-          <el-input placeholder="请输入折扣" v-model="ruleForm.productDiscountList.discount">
+        <el-form-item label="商品折扣(%)" prop="discount">
+          <!-- <el-input placeholder="请输入折扣" v-model="ruleForm.productDiscountList.discount">
             <template slot="append">%</template>
-          </el-input>
+          </el-input> -->
+          <el-input-number v-model="ruleForm.productDiscountList.discount" :min="10" :max="100"></el-input-number>
         </el-form-item>
         <el-form-item label="折扣时间" prop="date">
+          开始时间：
           <el-date-picker
             v-model="ruleForm.productDiscountList.startTime"
             type="datetime"
             placeholder="选择开始日期时间"
           ></el-date-picker>
+          结束时间：
           <el-date-picker
             v-model="ruleForm.productDiscountList.endTime"
             type="datetime"
@@ -134,7 +139,7 @@
         <el-form-item>{{productId}}</el-form-item>
         <el-form-item
           prop="email"
-          :label="'商品属性名'+indexS"
+          :label="'商品属性名'+indexS+'项'"
           :rules="[
       { required: true, message: '商品属性名', trigger: 'blur' },
       { type: 'string', message: '商品属性名', trigger: ['blur', 'change'] }
@@ -144,13 +149,14 @@
         </el-form-item>
         <el-form-item
           v-for="(domain, indexY) in dynamicValidateForm.Attributes[indexS].valueList"
-          :label="'商品属性值' + index"
+          :label="'商品属性值' + indexY+'目'"
           :key="indexY"
-          :prop="'valueList.' + index + '.value'"
+          :prop="dynamicValidateForm.Attributes[indexS].valueList[indexY].attributesValue"
           :rules="{
-      required: true, message: '域名不能为空', trigger: 'blur'
+      required: true, message: '商品属性值', trigger: 'blur'
     }"
         >
+        <!-- :prop="'valueList.' + index + '.value'" -->
           <el-input v-model="domain.attributesValue"></el-input>
           <el-button @click.prevent="removeDomain(indexS,indexY)">删除</el-button>
         </el-form-item>
@@ -174,7 +180,8 @@ import {
   TypeEdit,
   TypeSee,
   SearchTtype,
-  productInsert
+  productInsert,
+  AttributeInsert
 } from "@/api/CommodityManage";
 import ImgUpload from "@/components/upload/image";
 import moment from "moment";
@@ -191,14 +198,14 @@ export default {
         Attributes: [
           {
             productId:this.productId,
-            attributesName: "123",
+            attributesName: "",
             valueList: [
               {
-                attributesValue: "456",
+                attributesValue: "",
                 
-              }
+              },
             ]
-          }
+          },
         ]
         
       },
@@ -230,6 +237,7 @@ export default {
 
       options: "",
       value1: [],
+      isIndex:1,
       productId: "",
       dialogFormVisibleAddABN: false,
 
@@ -293,10 +301,17 @@ export default {
   },
   methods: {
     getList() {
+      console.log('zhixing',this.isIndex,'111')
       this.listLoading = true;
-      getTypeList(this.currentPage, this.pageSize).then(response => {
+      const data={
+          // currentPage:this.currentPage,
+          //  pageSize:this.pageSize,
+          openPage:false,
+           isIndex:this.isIndex
+      }
+      getTypeList(data).then(response => {
         const result = response.data;
-        console.log(result);
+        console.log(result,'111111111111');
         if (result) {
           const data = result.data;
       
@@ -414,26 +429,25 @@ export default {
            
           }
         ]
-      });
+      },);
     },
     addDomain(indexS) {
       console.log(indexS, this.dynamicValidateForm.Attributes[indexS]);
-      this.dynamicValidateForm.Attributes[indexS].valueList.push({
+      this.dynamicValidateForm.Attributes[indexS].valueList.push(
+        {
         attributesValue: "",
         // id: ""
-      });
+      },
+      );
     },
     AttributeADD() {
       // dialogFormVisibleAddABN = false
-      console.log(this.dynamicValidateForm, "提交的");
+      console.log(this.dynamicValidateForm.Attributes, "提交的");
       
-      const data = [
-        {
-         
-        }
-      ];
-
-      AttributeInsert(data).then(response => {
+      const data =[]
+      
+      console.log(data)
+      AttributeInsert(this.dynamicValidateForm.Attributes).then(response => {
         const result = response.data;
         // console.log(result, "执行了");
         if (result) {

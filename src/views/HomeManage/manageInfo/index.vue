@@ -89,49 +89,71 @@
           {{ scope.$index+1+(currentPage-1)*10 }}
         </template>
       </el-table-column>
-      <el-table-column label="名称" align="center" width="360">
+      <el-table-column label="名称" align="center" width="160">
         <template v-slot="scope">
           {{ scope.row.productName }}
         </template>
       </el-table-column>
-      <el-table-column label="发布人" align="center" width="180">
+       <el-table-column label="类型" align="center" width="120">
+        <template v-slot="scope">
+          {{ scope.row.typeName }}
+        </template>
+      </el-table-column>
+      <el-table-column label="创建人" align="center" width="140">
         <template v-slot="scope">
           {{ scope.row.createUser }}
         </template>
       </el-table-column>
-      <el-table-column label="商品原价" align="center" width="180">
+      <el-table-column label="商品原价" align="center" width="120">
         <template v-slot="scope">
           {{ scope.row.price }}
         </template>
       </el-table-column>
-      <el-table-column label="库存" align="center" width="180">
+      <el-table-column label="库存" align="center" width="120">
         <template v-slot="scope">
           {{ scope.row.stock }}
         </template>
       </el-table-column>
-      <el-table-column label="销量" align="center" width="180">
+      <el-table-column label="销量" align="center" width="90">
         <template v-slot="scope">
           {{ scope.row.sales }}
         </template>
       </el-table-column>
 
-      <el-table-column label="创建时间" align="center" width="360">
+      <el-table-column label="创建时间" align="center" width="160">
           <template v-slot="scope">
             {{ scope.row.createTime | modifyTime }}
           </template>
       </el-table-column>
+      <!-- <el-table-column label="创建时间" align="center" width="160">
+          <template v-slot="scope">
+            {{ scope.row.createTime | modifyTime }}
+          </template>
+      </el-table-column> -->
      
-     <el-table-column label="类型" align="center" width="180">
-        <template v-slot="scope">
-          {{ scope.row.typeName }}
-        </template>
-      </el-table-column>
+     
+    
       
       <el-table-column align="center" label="操作" width="220">
         <template v-slot="scope">
           <el-button size="small"  type="primary" @click="handleSee(scope.row.id)">查看</el-button>
           <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
+          <el-popconfirm
+            confirmButtonText="确认"
+            cancelButtonText="取消"
+            icon="el-icon-info"
+            iconColor="red"
+            @onConfirm="handleDelete(scope.row.id)"
+            title="确定删除吗？"
+          >
+            <el-button
+              slot="reference"
+              size="mini"
+              type="danger"
+             
+            >删除</el-button>
+          </el-popconfirm>
+          <!-- <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>

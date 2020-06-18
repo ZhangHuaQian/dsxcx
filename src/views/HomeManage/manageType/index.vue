@@ -96,24 +96,45 @@
         <template v-slot="scope" is-center>{{ scope.$index+1+(currentPage-1)*10 }}</template>
       </el-table-column>
 
-      <el-table-column label="类型" width="360" align="center">
+      <el-table-column label="类型" width="150" align="center">
         <template v-slot="scope">{{ scope.row.typeName }}</template>
       </el-table-column>
       <el-table-column label="简介" width="360" align="center">
         <template v-slot="scope">{{ scope.row.synopsis }}</template>
       </el-table-column>
 
-      <el-table-column label="发布人" width="180" align="center">
+      <el-table-column label="创建人" width="120" align="center">
         <template v-slot="scope">{{ scope.row.createUser }}</template>
       </el-table-column>
-      <el-table-column label="创建时间" width="540" align="center">
+      <el-table-column label="创建时间" width="180" align="center">
         <template v-slot="scope">{{ scope.row.modifyTime | modifyTime }}</template>
       </el-table-column>
+      <!-- <el-table-column label="创建时间" width="300" align="center">
+        <template v-slot="scope">{{ scope.row.modifyTime | modifyTime }}</template>
+      </el-table-column>
+      <el-table-column label="创建时间" width="300" align="center">
+        <template v-slot="scope">{{ scope.row.modifyTime | modifyTime }}</template>
+      </el-table-column> -->
       <el-table-column align="center" label="操作" width="220">
         <template v-slot="scope">
           <el-button size="small" type="primary" @click="handleSee(scope.row.id)">查看</el-button>
           <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
+          <el-popconfirm
+            confirmButtonText="确认"
+            cancelButtonText="取消"
+            icon="el-icon-info"
+            iconColor="red"
+            @onConfirm="handleDelete(scope.row.id)"
+            title="确定删除吗？"
+          >
+            <el-button
+              slot="reference"
+              size="mini"
+              type="danger"
+             
+            >删除</el-button>
+          </el-popconfirm>
+          <!-- <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>

@@ -38,7 +38,7 @@ export const constantRoutes = [
       {
         path: 'manageType',
         component: () => import('@/views/HomeManage/manageType/index'),
-        meta: { title: '商品类型', icon: 'example' }
+        meta: { title: 'banner类型', icon: 'example' }
       },
       // {
       //   path:"typeInsert",

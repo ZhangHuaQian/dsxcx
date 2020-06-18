@@ -106,7 +106,23 @@
         <template v-slot="scope">
           <el-button size="small" type="primary" @click="handleSee(scope.row.id)">查看</el-button>
           <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
+         
+         <el-popconfirm
+            confirmButtonText="确认"
+            cancelButtonText="取消"
+            icon="el-icon-info"
+            iconColor="red"
+            @onConfirm="handleDelete(scope.row.id)"
+            title="确定删除吗？"
+          >
+            <el-button
+              slot="reference"
+              size="mini"
+              type="danger"
+             
+            >删除</el-button>
+         </el-popconfirm>
+          <!-- <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -114,6 +130,7 @@
       background
       layout="total, prev, pager, next, jumper"
       :page-size="pageSize"
+      :current-page="currentPage"
       :total="total"
       @current-change="handleCurrentChange"
     />
@@ -189,7 +206,13 @@ export default {
   methods: {
     getList() {
       this.listLoading = true;
-      getTypeList(this.isIndex).then(response => {
+      const data = {
+        openPage: this.openPage,
+        currentPage: this.currentPage,
+        pageSize: this.pageSize,
+        form: this.form
+      };
+      getTypeList(data).then(response => {
         const result = response.data;
         console.log(result, "homem");
         if (result) {
@@ -202,11 +225,11 @@ export default {
       });
     },
     handleAdd() {
-      console.log(this.form.synopsis);
+      console.log(this.form.synopsis,'jjj');
 
       this.$refs.form.validate(valid => {
         if (valid) {
-
+          this.listLoading = true;
           TypeAdd(this.form.typeName, this.isIndex,this.form.synopsis).then(response => {
         const result = response.data;
         // console.log(result, "homem");
@@ -215,7 +238,10 @@ export default {
           this.list = result.data;
           this.currentPage = result.pageNum;
           this.total = result.count;
+          
         }
+        this.listLoading = false;
+        
       });
       
       this.dialogFormVisibleAdd = false;
@@ -241,6 +267,7 @@ export default {
     },
 
     handleDelete(id) {
+      this.listLoading = true;
       TypeDelete(id).then(response => {
         const result = response.data;
         // console.log(result, "homem");
@@ -250,6 +277,7 @@ export default {
           this.currentPage = result.pageNum;
           this.total = result.count;
         }
+        this.listLoading = true;
       });
       this.getList();
     },
@@ -320,8 +348,17 @@ export default {
         }
       }
     },
+   handleSizeChange(val) {
+      console.log("789");
+      this.currentPage += 1;
+      // this.fetchData();
+      this.getList();
+    },
     handleCurrentChange(val) {
+      console.log("456");
       this.currentPage = val;
+
+      // this.fetchData();
       this.getList();
     }
   }

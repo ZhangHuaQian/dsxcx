@@ -14,22 +14,25 @@ export function getInfoList(data) {
 }
 
 export function getTypeList(data) {
+  console.log('getTypeList',data,'123')
   return axios({
     url: ip + '/productType/selectList',
     method: 'post',
-    data: {
-      data
-    }
+    // data: {
+    //   data
+    // }
+    data:data.json?data:Qs.stringify({isIndex:data.isIndex,openPage:data.openPage,page:data.currentPage,limit:data.pageSize,form:data.form})
   })
 }
 
-export function TypeAdd(typeName, isIndex) {
+export function TypeAdd(typeName, isIndex,synopsis) {
   return axios({
     url: ip + '/productType/insert',
     method: 'post',
     data: {
       typeName,
-      isIndex
+      isIndex,
+      synopsis
     }
   })
 }
@@ -129,6 +132,7 @@ export function SearchInfo(data, isIndex) {
 
 export function productInsert(data) {
   console.log('axios提交的表单',data.productDiscountList.startTime )
+  console.log(data,'chulai')
   return axios({
     url: ip + '/product/insert',
     method: 'post',
@@ -167,5 +171,15 @@ export function ReturnImg(data) {
     method: 'post',
     data: data
 
+  })
+}
+
+export function AttributeInsert(data) {
+  return axios({
+    url: ip + '/productAttribute/insert',
+    method: 'post',
+    data: [data]
+      
+    
   })
 }

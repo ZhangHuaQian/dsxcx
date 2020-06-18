@@ -1,9 +1,12 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
+      <el-col :span="3">
+       <el-button style="margin-top: 15px;" type="info"> 省份名称:</el-button>
+      </el-col>
       <el-col :span="8">
         <div style="margin-top: 15px;margin-bottom: 50px;width:20vw">
-          <el-input placeholder="请输入内容" v-model="input3" @input="Search" class="input-with-select" clearable>
+          <el-input placeholder="请输入省份" v-model="input3" @input="Search" class="input-with-select" clearable>
             <el-button slot="append" icon="el-icon-search" @click="Search"></el-button>
           </el-input>
         </div>
@@ -31,7 +34,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="价格" v-if="free()" :label-width="formLabelWidth" prop="postage" >
+        <el-form-item label="价格" v-if="free()" :label-width="formLabelWidth"  >
           <el-input v-model="form.postage"  autocomplete="off" clearable></el-input>
         </el-form-item>
       </el-form>
@@ -56,7 +59,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="编辑价格" v-if="free()"  :label-width="formLabelWidth">
+        <el-form-item label="编辑价格" v-if="free()"  :label-width="formLabelWidth" >
           <el-input v-model="form.postage"  autocomplete="off" clearable></el-input>
         </el-form-item>
       </el-form>
@@ -86,13 +89,28 @@
       </el-table-column>
 
       <el-table-column label="是否包邮" width="180" align="center">
-        <template v-slot="scope">{{ scope.row.isFree}}</template>
+        <template v-slot="scope">{{ scope.row.isFree }}</template>
       </el-table-column>
 
       <el-table-column align="center" label="操作">
         <template v-slot="scope">
           <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <el-popconfirm
+            confirmButtonText="确认"
+            cancelButtonText="取消"
+            icon="el-icon-info"
+            iconColor="red"
+            @onConfirm="handleDelete(scope.row.id)"
+            title="确定删除吗？"
+          >
+            <el-button
+              slot="reference"
+              size="mini"
+              type="danger"
+             
+            >删除</el-button>
+          </el-popconfirm>
+          <!-- <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -167,10 +185,10 @@ export default {
             { required: true, message: '请输入省份或地区名', trigger: 'blur' },
             { min: 0, max: 10, message: '长度在 0 到 10 个字符', trigger: 'blur' }
           ],
-           postage: [
-            { required: true, message: '请输入价格', trigger: 'blur' },
-            {  min: 0, max: 5, type: 'number', message: '长度在 0 到 5个字符', trigger: 'blur' }
-          ]
+          //  postage: [
+          //   { required: true, message: '请输入价格', trigger: 'blur' },
+          //   {  type: 'number', message: '价格为数字类型', trigger: 'blur' }
+          // ]
 
          }
       

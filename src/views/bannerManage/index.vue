@@ -1,10 +1,13 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
+      <el-col :span="3">
+       <el-button style="margin-top: 15px;" type="info"> 轮播图名称:</el-button>
+      </el-col>
       <el-col :span="8">
         <div style="margin-top: 15px;margin-bottom: 50px;width:20vw">
           <el-input
-            placeholder="请输入内容"
+            placeholder="请输入轮播图名称"
             v-model="input3"
             @input="Search"
             class="input-with-select"
@@ -123,19 +126,19 @@
       fit
       highlight-current-row
     >
-      <el-table-column label="编号" width="70" align="center">
+      <el-table-column label="编号" width="80" align="center">
         <template v-slot="scope">{{ scope.$index+1+(currentPage-1)*10 }}</template>
       </el-table-column>
-      <el-table-column label="名称" width="270" align="center">
+      <el-table-column label="名称" width="180" align="center">
         <template v-slot="scope">{{ scope.row.bannerName }}</template>
       </el-table-column>
-      <el-table-column label="发布人" width="180" align="center">
+      <el-table-column label="创建人" width="160" align="center">
         <template v-slot="scope">{{ scope.row.createUser }}</template>
       </el-table-column>
       <el-table-column label="简介" width="180" align="center">
         <template v-slot="scope">{{ scope.row.synopsis }}</template>
       </el-table-column>
-      <el-table-column label="跳转链接" width="360" align="center">
+      <el-table-column label="跳转链接" width="180" align="center">
         <template v-slot="scope">{{scope.row.jumpLink}}</template>
       </el-table-column>
       <el-table-column label="图片" width="180" align="center">
@@ -216,14 +219,16 @@
             cancelButtonText="取消"
             icon="el-icon-info"
             iconColor="red"
+            @onConfirm="handleDelete(scope.row.id)"
             title="确定删除吗？"
           >
             <el-button
               slot="reference"
               size="mini"
               type="danger"
-              @click.native="handleDelete(scope.row.id)"
+             
             >删除</el-button>
+             <!-- @click.native="" -->
           </el-popconfirm>
         </template>
       </el-table-column>

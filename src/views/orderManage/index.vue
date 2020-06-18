@@ -51,7 +51,22 @@
         <template v-slot="scope">
           <el-button size="small" type="primary" @click="handleClick(scope.row)">订单详情</el-button>
           <el-button size="mini" @click="handleEdit(scope.row)">更新</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          <el-popconfirm
+            confirmButtonText="确认"
+            cancelButtonText="取消"
+            icon="el-icon-info"
+            iconColor="red"
+            @onConfirm="handleDelete(scope.row.id)"
+            title="确定删除吗？"
+          >
+            <el-button
+              slot="reference"
+              size="mini"
+              type="danger"
+             
+            >删除</el-button>
+          </el-popconfirm>
+          <!-- <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>

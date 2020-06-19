@@ -2,6 +2,9 @@
   <div class="app-container">
 
     <el-row :gutter="20">
+      <el-col :span="3">
+       <el-button style="margin-top: 15px;" type="info"> ****名称:</el-button>
+      </el-col>
       <el-col :span="8">
         <div style="margin-top: 15px;margin-bottom: 50px;width:20vw">
           <el-input placeholder="请输入内容" v-model="input3" class="input-with-select" clearable>
@@ -246,6 +249,7 @@
         })
       },
       handleDelete(id) {
+       this.listLoading = true
       InfoDelete(id).then(response => {
         const result = response.data;
         // console.log(result, "homem");
@@ -255,6 +259,7 @@
           this.currentPage = result.pageNum;
           this.total = result.count;
         }
+        this.listLoading = false
 
         
       });
@@ -267,6 +272,7 @@
       
     },
     handleEdits() {
+      this.listLoading = true
       InfoEdit(this.form,this.isIndex).then(response => {
         const result = response.data;
         // console.log(result, "homem");
@@ -276,6 +282,7 @@
           this.currentPage = result.pageNum;
           this.total = result.count;
         }
+        this.listLoading = false
 
         
       });
@@ -286,6 +293,7 @@
     },
     handleSee(id) {
       this.dialogFormVisibleSee = true;
+      this.listLoading = true
       InfoSee(id).then(response => {
         const result = response.data;
         console.log(result,'12580');
@@ -296,12 +304,13 @@
           // this.total = result.count;
           this.form = result.data;
         }
+        this.listLoading = false
       });
       this.formView()
       
     },
     Search(){
-
+      this.listLoading = true
       SearchInfo(this.input3,this.isIndex).then(response => {
         const result = response.data;
         // console.log(result, "homem");
@@ -311,9 +320,11 @@
           this.currentPage = result.pageNum;
           this.total = result.count;
         }
+        this.listLoading = false
 
         
       });
+      this.getList()
 
     },
     formView(){

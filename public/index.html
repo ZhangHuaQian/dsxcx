@@ -1,17 +1,73 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title><%= webpackConfig.name %></title>
-  </head>
-  <body>
-    <noscript>
-      <strong>We're sorry but <%= webpackConfig.name %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+  <!-- <meta name="csrf-token" content="{{csrf_token()}}"> -->
+  <!-- <link href="https://cdn.bootcss.com/twitter-bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet"> -->
+
+  <title><%= webpackConfig.name %></title>
+</head>
+
+<body>
+  <noscript>
+    <strong>We're sorry but <%= webpackConfig.name %> doesn't work properly without JavaScript enabled. Please enable it
+      to continue.</strong>
+  </noscript>
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+</body>
+<!-- <script>
+  require(['vue','hdjs'], function (Vue,hdjs) {
+        var vm = new Vue({
+            el: '#BJQ',
+            data: {
+                field: {content:''},
+            },
+            mounted() {
+                //图文编辑器
+                var This = this;
+                hdjs.ueditor('container', {}, function (editor) {
+                    //监听内容更改
+					editor.addListener('contentChange', function () {
+						vm.$set(vm.field, 'content', editor.getContent());
+					});
+					//监听vue数据
+					vm.$watch('field', function (item) {
+						if (editor && editor.getContent() != item.content) {
+							editor.setContent(item.content ? item.content : '');
+						}
+					});
+                    //失去焦点时处罚
+					editor.addListener('blur', function () {
+						vm.$set(vm.field, 'content', editor.getContent());
+					});
+					editor.addListener('clearRange', function () {
+						vm.$set(vm.field, 'content', editor.getContent());
+					});
+                });
+            }
+        })
+    })
+
+  window.hdjs={
+      //组件目录必须绝对路径
+      base : '@/assets/hdjs',
+      //上传文件后台地址
+      // uploader : '/uploader.php?',
+      //获取文件列表的后台地址
+      // filesLists : '/filesLists.php?',
+      //require.js配置项（可为空）
+      requireJs:{paths:{},shim:{}},
+  };
+  
+    
+</script>
+
+<script src="hdjs/require.js"></script>
+<script src="hdjs/config.js"></script> -->
+
 </html>

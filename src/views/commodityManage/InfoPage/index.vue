@@ -2,7 +2,12 @@
   <div class="app-container">
     <el-row :gutter="20">
       <el-col :span="3">
-       <el-button style="margin-top: 15px;" type="info"> 商品名称:</el-button>
+        <el-button style="margin-top: 15px;" type="info">商品名称:</el-button>
+      </el-col>
+      <el-col :span="4">
+        <el-select v-model="TypeId" style="margin-top: 15px;" placeholder="请选择商品类型">
+          <el-option v-for="item in options" :key="item.id" :label="item.typeName" :value="item.id"></el-option>
+        </el-select>
       </el-col>
       <el-col :span="8">
         <div style="margin-top: 15px;margin-bottom: 50px;width:20vw">
@@ -24,10 +29,10 @@
         <el-form-item label="标题" :label-width="formLabelWidth">
           <el-input v-model="form.typeName" autocomplete="off" clearable placeholder="请输入"></el-input>
         </el-form-item>
-        <el-form-item label="" :label-width="formLabelWidth">
+        <el-form-item label :label-width="formLabelWidth">
           <el-input v-model="form.typeName" autocomplete="off" clearable placeholder="请输入"></el-input>
         </el-form-item>
-        <el-form-item label="" :label-width="formLabelWidth">
+        <el-form-item label :label-width="formLabelWidth">
           <el-input v-model="form.typeName" autocomplete="off" clearable placeholder="请输入"></el-input>
         </el-form-item>
         <el-form-item label="内容" :label-width="formLabelWidth">
@@ -46,7 +51,6 @@
       </div>
     </el-dialog>
 
-    
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -62,29 +66,28 @@
       <el-table-column label="名称" width="180" align="center">
         <template v-slot="scope">{{ scope.row.productName }}</template>
       </el-table-column>
-       <el-table-column label="类型" width="140" align="center">
+      <el-table-column label="类型" width="140" align="center">
         <template v-slot="scope">{{ scope.row.typeName }}</template>
       </el-table-column>
-      <el-table-column label="发布人" width="180" align="center">
+      <el-table-column label="创建人" width="180" align="center">
         <template v-slot="scope">{{ scope.row.createUser }}</template>
       </el-table-column>
       <el-table-column label="原价" width="120" align="center">
         <template v-slot="scope">{{ scope.row.price }}</template>
       </el-table-column>
-      
+
       <el-table-column label="销量" width="120" align="center">
         <template v-slot="scope">{{ scope.row.sales }}</template>
       </el-table-column>
-      
-       <!-- <el-table-column label="销量" width="180" align="center">
+
+      <!-- <el-table-column label="销量" width="180" align="center">
         <template v-slot="scope">{{ scope.row.stock }}</template>
-      </el-table-column> -->
+      </el-table-column>-->
       <el-table-column label="创建时间" width="160" align="center">
         <template v-slot="scope">{{ scope.row.createTime | modifyTime }}</template>
       </el-table-column>
 
-     
-      <el-table-column align="center" label="操作" width="220" >
+      <el-table-column align="center" label="操作" width="220">
         <template v-slot="scope">
           <el-button size="small" type="primary" @click="handleClick(scope.row.id)">查看</el-button>
           <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -97,12 +100,7 @@
             @onConfirm="handleDelete(scope.row.id)"
             title="确定删除吗？"
           >
-            <el-button
-              slot="reference"
-              size="mini"
-              type="danger"
-             
-            >删除</el-button>
+            <el-button slot="reference" size="mini" type="danger">删除</el-button>
           </el-popconfirm>
           <!-- <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
         </template>
@@ -142,7 +140,6 @@
       </div>
     </el-dialog>
 
-
     <el-pagination
       background
       layout="total, prev, pager, next, jumper"
@@ -154,7 +151,14 @@
 </template>
 
 <script>
-import { getInfoList,InfoSee,InfoDelete,InfoEdit,SearchInfo } from "@/api/homeManage";
+import {
+  getInfoList,
+  getTypeList,
+  InfoSee,
+  InfoDelete,
+  InfoEdit,
+  SearchInfo
+} from "@/api/homeManage";
 import insertComponent from "./insert.vue";
 import updateComponent from "./update.vue";
 import deleteComponent from "./delete.vue";
@@ -181,6 +185,7 @@ export default {
   data() {
     return {
       listLoading: true,
+      TypeId:'',
       list: null,
       currentPage: 1, // 当前页码
       total: 0, // 总条数
@@ -188,30 +193,30 @@ export default {
       formInline: {},
       activeName: "0",
       options: [],
-      input3:'',
-      dialogFormVisibleSee:false,
-      dialogFormVisibleAdd:false,
-      form:{
-        id:'',
-        typeName:'',
-        createTime:'',
-        createUser:''
-
-
-
+      input3: "",
+      isIndex: 1,
+      dialogFormVisibleSee: false,
+      dialogFormVisibleAdd: false,
+      form: {
+        id: "",
+        typeName: "",
+        createTime: "",
+        createUser: ""
       },
-      formLabelWidth:'120px',
+      options: "",
+      formLabelWidth: "120px"
     };
   },
   mounted() {
     this.getList();
+    this.gettypelist()
   },
   methods: {
     getList() {
       this.listLoading = true;
       getInfoList(this.currentPage, this.pageSize).then(response => {
         const result = response.data;
-        console.log(result,'商品信息');
+        console.log(result, "商品信息");
         if (result) {
           const data = result.data;
           this.list = result.data;
@@ -221,6 +226,32 @@ export default {
         this.listLoading = false;
       });
     },
+    gettypelist(){
+
+     this.listLoading = true;
+      const data={
+          // currentPage:this.currentPage,
+          //  pageSize:this.pageSize,
+          openPage:false,
+           isIndex:this.isIndex
+      }
+      getTypeList(data).then(response => {
+        const result = response.data;
+        console.log(result,'111111111111');
+        if (result) {
+          const data = result.data;
+      
+          this.options = result.data;
+          console.log(this.options);
+
+          this.currentPage = result.pageNum;
+          this.total = result.count;
+        }
+        this.listLoading = false;
+      });
+
+    },
+    
     handleEdit(index, row) {
       console.log(index, row);
     },
@@ -228,10 +259,11 @@ export default {
       console.log(index, row);
     },
     handleClick(id) {
+      this.listLoading = true
       this.dialogFormVisibleSee = true;
       InfoSee(id).then(response => {
         const result = response.data;
-        console.log(result,'infosee');
+        console.log(result, "infosee");
         if (result) {
           // const data = result.data;
           // this.list = result.data;
@@ -239,15 +271,28 @@ export default {
           // this.total = result.count;
           this.form = result.data;
         }
+        this.listLoading = true
       });
-      
     },
     handleCurrentChange(val) {
       this.currentPage = val;
       this.getList();
     },
-    Search(){},
-    handleAdd(){},
+    Search() {
+      this.listLoading = true
+      SearchInfo(this.input3, this.isIndex,this.TypeId).then(response => {
+        const result = response.data;
+        // console.log(result, "homem");
+        if (result) {
+          const data = result.data;
+          this.list = result.data;
+          this.currentPage = result.pageNum;
+          this.total = result.count;
+        }
+        this.listLoading = false
+      });
+    },
+    handleAdd() {},
     Seeclose() {
       this.dialogFormVisibleSee = false;
       // this.form=''
@@ -256,7 +301,7 @@ export default {
           this.form[key] = "";
         }
       }
-    },
+    }
   }
 };
 </script>

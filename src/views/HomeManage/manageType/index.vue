@@ -1,6 +1,9 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
+       <el-col :span="3">
+       <el-button style="margin-top: 15px;" type="info"> 商品类型名称:</el-button>
+      </el-col>
       <el-col :span="8">
         <div style="margin-top: 15px;margin-bottom: 50px;width:20vw">
           <el-input placeholder="请输入内容" v-model="input3" class="input-with-select" clearable>
@@ -243,6 +246,7 @@ export default {
 
       this.$refs.form.validate(valid => {
         if (valid) {
+          this.listLoading = true;
            TypeAdd(this.form.typeName, this.isIndex, this.form.synopsis).then(
         response => {
           const result = response.data;
@@ -253,6 +257,7 @@ export default {
             this.currentPage = result.pageNum;
             this.total = result.count;
           }
+          this.listLoading = false;
         }
       );
       this.getList();
@@ -271,6 +276,7 @@ export default {
     },
 
     handleDelete(id) {
+      this.listLoading = true;
       TypeDelete(id).then(response => {
         const result = response.data;
         // console.log(result, "homem");
@@ -280,6 +286,7 @@ export default {
           this.currentPage = result.pageNum;
           this.total = result.count;
         }
+        this.listLoading = false;
       });
       this.getList();
     },
@@ -291,6 +298,7 @@ export default {
 
         this.$refs.form.validate(valid => {
         if (valid) {
+          this.listLoading = true;
 
           TypeEdit(this.form, this.isIndex).then(response => {
         const result = response.data;
@@ -301,6 +309,7 @@ export default {
           this.currentPage = result.pageNum;
           this.total = result.count;
         }
+        this.listLoading = false;
       });
       this.getList();
       this.dialogFormVisibleEdit = false;
@@ -336,6 +345,7 @@ export default {
       console.log(this.form,'789')
     },
     Search() {
+      this.listLoading = true;
       SearchType(this.input3, this.isIndex).then(response => {
         const result = response.data;
         // console.log(result, "homem");
@@ -345,8 +355,10 @@ export default {
           this.currentPage = result.pageNum;
           this.total = result.count;
         }
-        this.getList()
+        this.listLoading = true;
+        
       });
+      this.getList()
     },
     formView(){
       for (const key in this.form) {

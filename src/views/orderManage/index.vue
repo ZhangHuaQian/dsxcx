@@ -1,10 +1,35 @@
 <template>
   <div class="app-container">
-    <div style="margin-top: 15px;margin-bottom: 50px;width:20vw">
+    <el-row :gutter="20">
+      <el-col :span="3">
+        <el-button style="margin-top: 15px;" type="info">不懂放什么</el-button>
+      </el-col>
+      <el-col :span="8">
+        <div style="margin-top: 15px;margin-bottom: 50px;width:20vw">
+          <el-input
+            placeholder="请输入***"
+            v-model="input3"
+            @input="Search"
+            class="input-with-select"
+            clearable
+          >
+            <el-button slot="append" icon="el-icon-search" @click="Search"></el-button>
+          </el-input>
+        </div>
+      </el-col>
+      <!-- <el-col :span="4">
+        <el-button
+          type="primary"
+          @click="dialogFormVisibleAdd = true"
+          style="margin-bottom:10px;margin-top:15px"
+        >添加</el-button>
+      </el-col> -->
+    </el-row>
+    <!-- <div style="margin-top: 15px;margin-bottom: 50px;width:20vw">
       <el-input placeholder="请输入内容" v-model="input3" class="input-with-select" clearable>
         <el-button slot="append" icon="el-icon-search"></el-button>
       </el-input>
-    </div>
+    </div> -->
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -30,8 +55,15 @@
       <el-table-column label="下单时间" width="360" align="center">
         <template v-slot="scope">{{ scope.row.orderTime | modifyTime }}</template>
       </el-table-column>
-      <el-table-column label="订单状态{0:未付款 1:待发货 2:已发货 3:已完成 4:已取消}" width="180" align="center">
-        <template v-slot="scope">{{ scope.row.status }}</template>
+      <el-table-column label="订单状态" width="180" align="center">
+        <template v-slot="scope">
+          <p v-if="scope.row.status==0">未付款</p>
+          <p v-if="scope.row.status==1">待发货</p>
+          <p v-if="scope.row.status==2">已发货</p>
+          <p v-if="scope.row.status==3">已完成</p>
+          <p v-if="scope.row.status==4">已取消</p>
+          <!-- {{ scope.row.status }} -->
+          </template>
       </el-table-column>
 
       <el-table-column label="联系电话" width="180" align="center">

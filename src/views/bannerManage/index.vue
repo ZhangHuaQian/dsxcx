@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-row :gutter="20">
       <el-col :span="3">
-       <el-button style="margin-top: 15px;" type="info"> 轮播图名称:</el-button>
+        <el-button style="margin-top: 15px;" type="info">轮播图名称:</el-button>
       </el-col>
       <el-col :span="8">
         <div style="margin-top: 15px;margin-bottom: 50px;width:20vw">
@@ -73,7 +73,7 @@
     <!-- 图片裁剪结束 -->
 
     <!-- 详情开始 -->
-    <el-dialog :visible.sync="dialogVisibleTJ" append-to-body>
+    <el-dialog title="添加" :visible.sync="dialogVisibleTJ" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="标题" prop="bannerName">
           <el-input v-model="form.bannerName" placeholder="请输入标题" />
@@ -143,11 +143,17 @@
       </el-table-column>
       <el-table-column label="图片" width="180" align="center">
         <template v-slot="scope">
-          <el-image style="width: 50px; height: 50px" :src="scope.row.imageUrl" cover>
+          <!-- <el-image @click="viewImg()"   :src="scope.row.imageUrl" cover>
             <div slot="error" class="image-slot">
               <i class="el-icon-picture-outline"></i>
             </div>
-          </el-image>
+          </el-image>-->
+          <img :src="scope.row.imageUrl" @click="viewImg(scope.row.imageUrl)" style="width: 50px; height: 50px" alt />
+
+          <el-dialog title="查看大图" :visible.sync="dialogTableVisibleIMG">
+            <el-image  :src="imageUrl" :fit="fit"></el-image>
+          </el-dialog>
+          <!-- <el-image style="width: 100px; height: 100px" :src="scope.row.imageUrl" :preview-src-list="srcList"></el-image> -->
         </template>
       </el-table-column>
 
@@ -200,6 +206,9 @@
               <el-form-item label="简介" :label-width="formLabelWidth" prop="synopsis">
                 <el-input v-model="form.synopsis" autocomplete="off" />
               </el-form-item>
+              <el-form-item label="图片详情" :label-width="formLabelWidth">
+                <ImgUpload :geturl="form.imageUrl" @onAvatarSuccess="handleAvatarSuccess" />
+              </el-form-item>
               <el-form-item label="轮播图地址" :label-width="formLabelWidth">
                 <el-input v-model="form.imageUrl" autocomplete="off" :disabled="true"></el-input>
               </el-form-item>
@@ -222,13 +231,8 @@
             @onConfirm="handleDelete(scope.row.id)"
             title="确定删除吗？"
           >
-            <el-button
-              slot="reference"
-              size="mini"
-              type="danger"
-             
-            >删除</el-button>
-             <!-- @click.native="" -->
+            <el-button slot="reference" size="mini" type="danger">删除</el-button>
+            <!-- @click.native="" -->
           </el-popconfirm>
         </template>
       </el-table-column>
@@ -296,8 +300,8 @@ export default {
     return {
       //  srcList:'',
       srcList: [
-        "https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg",
-        "https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg"
+        "http://171.111.153.241:8188/shop/static/photo/1592552217496TIM截图20200519162217.png"
+        // "https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg"
       ],
       listLoading: true,
       rules: {
@@ -334,8 +338,10 @@ export default {
       dialogFormVisibleSee: false,
       dialogFormVisibleTJ: false,
       dialogFormVisibleSeeImage: false,
+      dialogTableVisibleIMG:false,
       fileList: [],
       imageUrl: "",
+
       form: {
         id: "",
         bannerName: "",
@@ -637,7 +643,13 @@ export default {
           // this.form.image = this.serverip + response.data.data.src;
           this.form.imageUrl = response.data;
           this.cropperDialogVisible = false;
-          this.dialogVisibleTJ = true;
+          if (this.dialogVisibleTJ == true) {
+            this.dialogVisibleTJ = true;
+          }
+          if (this.dialogFormVisibleEdit == true) {
+            this.dialogFormVisibleEdit == true;
+          }
+
           // this.dialogFormVisible = false;
           console.log(this.form.imageUrl, "000");
 
@@ -669,6 +681,11 @@ export default {
 
       // this.fetchData();
       this.getList();
+    },
+    viewImg(ImageUrl) {
+      console.log("chufa");
+      this.dialogTableVisibleIMG = true;
+      this.imageUrl=ImageUrl
     }
 
     // fetchData() {

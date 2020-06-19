@@ -1,9 +1,12 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
+      <el-col :span="4">
+       <el-button style="margin-top: 15px;" type="info"> 商品类型名称:</el-button>
+      </el-col>
       <el-col :span="8">
         <div style="margin-top: 15px;margin-bottom: 50px;width:20vw">
-          <el-input placeholder="请输入内容" v-model="input3" class="input-with-select" clearable>
+          <el-input placeholder="请输入商品类型" v-model="input3" class="input-with-select" clearable>
             <el-button slot="append" icon="el-icon-search" @click="Search"></el-button>
           </el-input>
         </div>
@@ -89,20 +92,20 @@
         <template v-slot="scope" is-center>{{ scope.$index+1+(currentPage-1)*10 }}</template>
       </el-table-column>
 
-      <el-table-column label="类型" width="360" align="center">
+      <el-table-column label="类型" width="140" align="center">
         <template v-slot="scope">{{ scope.row.typeName }}</template>
       </el-table-column>
-      <el-table-column label="简介" width="360" align="center">
+      <el-table-column label="简介" width="480" align="center">
         <template v-slot="scope">{{ scope.row.synopsis }}</template>
       </el-table-column>
 
-      <el-table-column label="发布人" width="180" align="center">
+      <el-table-column label="创建人" width="180" align="center">
         <template v-slot="scope">{{ scope.row.createUser }}</template>
       </el-table-column>
-      <el-table-column label="创建时间" width="540" align="center">
+      <el-table-column label="创建时间" width="270" align="center">
         <template v-slot="scope">{{ scope.row.modifyTime | modifyTime }}</template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="360">
+      <el-table-column align="center" label="操作" width="220">
         <template v-slot="scope">
           <el-button size="small" type="primary" @click="handleSee(scope.row.id)">查看</el-button>
           <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
@@ -144,7 +147,8 @@ import {
   TypeDelete,
   TypeEdit,
   TypeSee,
-  SearchTtype
+  SearchType,
+  
 } from "@/api/CommodityManage";
 import insertComponent from "./insert.vue";
 import updateComponent from "./update.vue";
@@ -328,6 +332,7 @@ export default {
       });
     },
     Search() {
+      console.log('执行')
       SearchType(this.input3, this.isIndex).then(response => {
         const result = response.data;
         // console.log(result, "homem");

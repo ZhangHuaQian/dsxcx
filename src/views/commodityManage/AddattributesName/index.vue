@@ -35,7 +35,7 @@
         label-width="100px"
         class="demo-ruleForm"
       >
-        <el-form-item label="商品分类" prop="id">
+        <el-form-item label="商品类型" prop="id">
           <!-- <el-select v-model="ruleForm.productTypeList.id" multiple placeholder="请选择">
             <el-option
               v-for="item in options"
